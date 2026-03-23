@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Meal Attendance Automator",
+  "version": "1.0",
+  "description": "Automates meal attendance on CenterPilot using Procare data.",
+  "permissions": [
+    "tabs",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://hangar1.centerpilot.net/*",
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://hangar1.centerpilot.net/*"],
+      "js": ["centerpilot_automator.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
