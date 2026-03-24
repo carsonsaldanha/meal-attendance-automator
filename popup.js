@@ -1,3 +1,7 @@
+import '@material/web/button/filled-button.js';
+import '@material/web/button/text-button.js';
+import '@material/web/elevation/elevation.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   const startPauseBtn = document.getElementById('startPauseBtn');
   const stopBtn = document.getElementById('stopBtn');
@@ -6,44 +10,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const logWindow = document.getElementById('logWindow');
 
   async function addLog(message) {
-      const storageResult = await chrome.storage.local.get(['extensionLog']);
-      let log = storageResult.extensionLog || [];
-      if (log.length > 200) log = log.slice(-100);
-      log.push(`[${new Date().toLocaleTimeString()}] ${message}`);
-      await chrome.storage.local.set({ extensionLog: log });
+    const storageResult = await chrome.storage.local.get(['extensionLog']);
+    let log = storageResult.extensionLog || [];
+    if (log.length > 200) log = log.slice(-100);
+    log.push(`[${new Date().toLocaleTimeString()}] ${message}`);
+    await chrome.storage.local.set({ extensionLog: log });
   }
 
   function updateStatus(res) {
-      if (res.automationActive && !res.automationPaused) {
-          startPauseBtn.textContent = "Pause Automation";
-          startPauseBtn.style.backgroundColor = "#ff9800";
-          statusDiv.textContent = 'Automation is running!';
-      } else if (res.automationActive && res.automationPaused) {
-          startPauseBtn.textContent = "Resume Automation";
-          startPauseBtn.style.backgroundColor = "#4CAF50";
-          statusDiv.textContent = 'Automation paused.';
-      } else {
-          startPauseBtn.textContent = "Start Automation";
-          startPauseBtn.style.backgroundColor = "#4CAF50";
-          statusDiv.textContent = 'Automation stopped or completed.';
-      }
+    if (res.automationActive && !res.automationPaused) {
+      startPauseBtn.textContent = "Pause Automation";
+      startPauseBtn.style.setProperty('--md-sys-color-primary', '#ffb74d');
+      statusDiv.textContent = 'Automation is running!';
+    } else if (res.automationActive && res.automationPaused) {
+      startPauseBtn.textContent = "Resume Automation";
+      startPauseBtn.style.setProperty('--md-sys-color-primary', '#81c784');
+      statusDiv.textContent = 'Automation paused.';
+    } else {
+      startPauseBtn.textContent = "Start Automation";
+      startPauseBtn.style.setProperty('--md-sys-color-primary', '#81c784');
+      statusDiv.textContent = 'Automation stopped or completed.';
+    }
   }
 
   chrome.storage.local.get(['extensionLog', 'automationActive', 'automationPaused'], (result) => {
-     if(result.extensionLog) {
-         logWindow.innerHTML = result.extensionLog.join('<br>');
-         logWindow.scrollTop = logWindow.scrollHeight;
-     }
-     updateStatus(result);
+    if (result.extensionLog) {
+      logWindow.innerHTML = result.extensionLog.join('<br>');
+      logWindow.scrollTop = logWindow.scrollHeight;
+    }
+    updateStatus(result);
   });
 
   chrome.storage.onChanged.addListener((changes, namespace) => {
     if (changes.extensionLog) {
-       logWindow.innerHTML = changes.extensionLog.newValue.join('<br>');
-       logWindow.scrollTop = logWindow.scrollHeight;
+      logWindow.innerHTML = changes.extensionLog.newValue.join('<br>');
+      logWindow.scrollTop = logWindow.scrollHeight;
     }
     if (changes.automationActive || changes.automationPaused) {
-       chrome.storage.local.get(['automationActive', 'automationPaused'], updateStatus);
+      chrome.storage.local.get(['automationActive', 'automationPaused'], updateStatus);
     }
   });
 
@@ -80,20 +84,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       let roomQuery = await chrome.scripting.executeScript({
-          target: { tabId: centerPilotTab.id },
-          func: () => {
-              let rb = document.querySelector('#ctl00_ContentPlaceHolder_RadDropDownListSortingGroups .rddlFakeInput');
-              return rb ? rb.textContent.trim() : "ROOM 1";
-          }
+        target: { tabId: centerPilotTab.id },
+        func: () => {
+          let rb = document.querySelector('#ctl00_ContentPlaceHolder_RadDropDownListSortingGroups .rddlFakeInput');
+          return rb ? rb.textContent.trim() : "ROOM 1";
+        }
       });
-      
+
       let currentRoomText = roomQuery[0]?.result || "ROOM 1";
       let roomMatch = currentRoomText.match(/\d+/);
       let startingRoom = roomMatch ? parseInt(roomMatch[0], 10) : 1;
 
       await addLog(`Starting run from Room ${startingRoom}... Extracted ${Object.keys(attendanceData).length} kids.`);
-      
-      await chrome.storage.local.set({ 
+
+      await chrome.storage.local.set({
         attendanceData: attendanceData,
         automationActive: true,
         automationPaused: false,
@@ -113,28 +117,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   startPauseBtn.addEventListener('click', async () => {
-      const res = await chrome.storage.local.get(['automationActive', 'automationPaused']);
-      if (res.automationActive && !res.automationPaused) {
-          await chrome.storage.local.set({ automationPaused: true });
-          await addLog("<b>User clicked Pause.</b>");
-      } else if (res.automationActive && res.automationPaused) {
-          await chrome.storage.local.set({ automationPaused: false });
-          await addLog("<b>User clicked Resume.</b>");
-          const tabs = await chrome.tabs.query({});
-          let centerPilotTab = tabs.find(t => t.url && t.url.includes('hangar1.centerpilot.net/Centerpilot/Attendance/MealAttendance.aspx'));
-          if (centerPilotTab) {
-              await chrome.scripting.executeScript({
-                  target: { tabId: centerPilotTab.id },
-                  files: ['centerpilot_automator.js']
-              });
-          }
-      } else {
-          startAutomation();
+    const res = await chrome.storage.local.get(['automationActive', 'automationPaused']);
+    if (res.automationActive && !res.automationPaused) {
+      await chrome.storage.local.set({ automationPaused: true });
+      await addLog("<b>User clicked Pause.</b>");
+    } else if (res.automationActive && res.automationPaused) {
+      await chrome.storage.local.set({ automationPaused: false });
+      await addLog("<b>User clicked Resume.</b>");
+      const tabs = await chrome.tabs.query({});
+      let centerPilotTab = tabs.find(t => t.url && t.url.includes('hangar1.centerpilot.net/Centerpilot/Attendance/MealAttendance.aspx'));
+      if (centerPilotTab) {
+        await chrome.scripting.executeScript({
+          target: { tabId: centerPilotTab.id },
+          files: ['centerpilot_automator.js']
+        });
       }
+    } else {
+      startAutomation();
+    }
   });
 
   stopBtn.addEventListener('click', async () => {
-      await addLog("<b>User clicked Stop. Run terminated.</b>");
-      await chrome.storage.local.set({ automationActive: false, automationPaused: false });
+    await addLog("<b>User clicked Stop. Run terminated.</b>");
+    await chrome.storage.local.set({ automationActive: false, automationPaused: false });
   });
 });

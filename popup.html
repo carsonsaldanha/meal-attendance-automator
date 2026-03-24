@@ -1,25 +1,93 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+    rel="stylesheet">
   <style>
-    body { font-family: sans-serif; padding: 15px; width: 350px; background-color: #f9f9f9; }
-    h3 { margin-top: 0; margin-bottom: 15px; font-size: 16px; color: #333; }
-    button { padding: 10px; width: 100%; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; margin-bottom: 10px; }
-    #startPauseBtn { background-color: #4CAF50; color: white; }
-    #startPauseBtn:hover { opacity: 0.9; }
-    #stopBtn { background-color: #f44336; color: white; }
-    #stopBtn:hover { background-color: #da190b; }
-    #status { font-size: 12px; color: #555; word-wrap: break-word; font-weight: bold; margin-bottom: 5px; }
-    #logWindow { margin-top: 10px; height: 180px; overflow-y: scroll; font-size: 11px; font-family: monospace; background: white; border: 1px solid #ccc; padding: 5px; }
+    body {
+      font-family: "Google Sans", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
+      font-variation-settings: "GRAD" 0;
+      padding: 20px;
+      width: 500px;
+      background-color: white;
+      margin: 0;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    h3 {
+      margin-top: 0;
+      margin-bottom: 5px;
+      font-size: 18px;
+      color: #1a1a1a;
+      font-weight: 500;
+    }
+
+    md-filled-button {
+      width: 350px;
+    }
+
+    md-text-button {
+      width: 100%;
+    }
+
+    #startPauseBtn {
+      --md-sys-color-primary: #81c784;
+    }
+
+    #stopBtn {
+      --md-sys-color-primary: #ef5350;
+      --md-sys-color-on-primary: white;
+    }
+
+    #clearBtn {
+      --md-sys-color-primary: #90a4ae;
+      --md-sys-color-on-primary: white;
+    }
+
+    #status {
+      width: 100%;
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+      word-wrap: break-word;
+      font-weight: 500;
+    }
+
+    #logWindow {
+      width: 100%;
+      box-sizing: border-box;
+      height: 180px;
+      overflow-y: scroll;
+      font-size: 11px;
+      font-family: monospace;
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 8px;
+      border: 1px solid #e0e0e0;
+      color: #333;
+    }
   </style>
 </head>
+
 <body>
-  <h3>Meal Attendance Sync</h3>
-  <button id="startPauseBtn">Start Automation</button>
-  <button id="stopBtn">Stop Automation</button>
-  <button id="clearBtn" style="background-color: #888; color: white;">Clear Log</button>
+  <h3 style="text-align: center;">Meal Attendance Automator</h3>
+  <md-filled-button id="startPauseBtn">Start Automation</md-filled-button>
+  <md-filled-button id="stopBtn">Stop Automation</md-filled-button>
+  <md-filled-button id="clearBtn">Clear Log</md-filled-button>
   <div id="status">Ready.</div>
   <div id="logWindow"></div>
-  <script src="popup.js"></script>
+  <script src="dist/popup.js" type="module"></script>
 </body>
+
 </html>

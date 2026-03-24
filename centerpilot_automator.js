@@ -9,7 +9,7 @@
       let data = await chrome.storage.local.get(['extensionLog']);
       let log = data.extensionLog || [];
       if (log.length > 200) log = log.slice(-100); 
-      log.push(`[${new Date().toLocaleTimeString()}] \u00A0\u00A0` + message); 
+      log.push(`[${new Date().toLocaleTimeString()}] ` + message); 
       await chrome.storage.local.set({ extensionLog: log });
   }
 
@@ -174,7 +174,7 @@
     const currentMeal = MEALS[state.currentMealIndex];
     const currentRoom = state.currentRoom;
 
-    await addLog(`<br><b>Processing Room ${currentRoom} / ${currentMeal}...</b>`);
+    await addLog(`<b>Processing Room ${currentRoom} / ${currentMeal}...</b>`);
 
     let fullRoomString = "ROOM " + currentRoom.toString();
     let shortRoomString = "RM " + currentRoom.toString();
@@ -186,6 +186,12 @@
       await addLog(`Switching Room Dropdown to Room ${currentRoom}...`);
       let success = await simulateComboClickAndWaitForTable("ctl00_ContentPlaceHolder_RadDropDownListSortingGroups", [fullRoomString, shortRoomString]);
       if(!success) {
+         if (currentRoom === 1) {
+             await addLog(`<span style="color:orange">Notice: Room '1' not found. Advancing to Room '2'.</span>`);
+             await chrome.storage.local.set({ currentRoom: 2 });
+             setTimeout(runStep, 1500);
+             return;
+         }
          await addLog(`<span style="color:red">Error: Could not find room '${currentRoom}' in dropdown.</span>`);
          return;
       }
